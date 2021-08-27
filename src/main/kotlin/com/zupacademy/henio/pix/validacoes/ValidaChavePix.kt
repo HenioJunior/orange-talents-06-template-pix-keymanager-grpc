@@ -1,14 +1,12 @@
 package com.zupacademy.henio.pix.validacoes
 
-import com.zupacademy.henio.pix.registra.NovaChavePix
+import com.zupacademy.henio.pix.registra.NovaChaveRequest
 import io.micronaut.core.annotation.AnnotationValue
-import io.micronaut.validation.validator.constraints.ConstraintValidator
-import io.micronaut.validation.validator.constraints.ConstraintValidatorContext
+import io.micronaut.validation.validator.constraints.*
 import javax.inject.Singleton
 import javax.validation.Constraint
 import javax.validation.Payload
-import kotlin.annotation.AnnotationTarget.CLASS
-import kotlin.annotation.AnnotationTarget.TYPE
+import kotlin.annotation.AnnotationTarget.*
 import kotlin.reflect.KClass
 
 @MustBeDocumented
@@ -22,18 +20,18 @@ annotation class ValidaChavePix(
 )
 
 @Singleton
-class ValidaChavePixValidator: ConstraintValidator<ValidaChavePix, NovaChavePix> {
+class ValidaChavePixValidator: ConstraintValidator<ValidaChavePix, NovaChaveRequest> {
 
     override fun isValid(
-        value: NovaChavePix?,
+        value: NovaChaveRequest?,
         annotationMetadata: AnnotationValue<ValidaChavePix>,
         context: ConstraintValidatorContext
     ): Boolean {
 
-        if(value?.tipo == null) {
+        if(value?.tipoChave == null) {
             return false
         }
 
-        return value.tipo.valida(value.chave)
+        return value.tipoChave.valida(value.valorChave)
     }
 }

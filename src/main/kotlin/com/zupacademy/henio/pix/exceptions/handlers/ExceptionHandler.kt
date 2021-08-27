@@ -1,4 +1,4 @@
-package com.zupacademy.henio.pix.exceptions
+package com.zupacademy.henio.pix.exceptions.handlers
 
 import io.grpc.Metadata
 import io.grpc.Status

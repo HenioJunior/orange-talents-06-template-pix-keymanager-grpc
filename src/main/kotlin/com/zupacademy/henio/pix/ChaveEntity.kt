@@ -9,10 +9,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(uniqueConstraints = [UniqueConstraint(name = "uk_chave_pix",
-columnNames = ["chave"]
-)])
-class ChavePixEntity(
+class ChaveEntity(
     @field: NotNull
     @Column(nullable = false)
     val clienteId: UUID,
@@ -20,7 +17,7 @@ class ChavePixEntity(
     @Enumerated(EnumType.STRING)
     @field: NotNull
     @Column(nullable = false)
-    val tipo: TipoDeChave,
+    val tipoChave: TipoDeChave,
 
     @field: NotBlank
     @Column(unique = true, nullable = false)
@@ -29,7 +26,7 @@ class ChavePixEntity(
     @Enumerated(EnumType.STRING)
     @field: NotNull
     @Column(nullable = false)
-    val tipoDeConta: TipoDeConta,
+    val tipoConta: TipoDeConta,
 
     @field:Valid
     @Embedded
@@ -42,7 +39,4 @@ class ChavePixEntity(
     @Column(nullable = false)
     val criadaEm: LocalDateTime = LocalDateTime.now()
 
-    override fun toString(): String {
-        return "ChavePix(clienteId=$clienteId, tipo=$tipo, chave='$chave', tipoDeConta=$tipoDeConta, conta=$conta, id=$id)"
-    }
 }

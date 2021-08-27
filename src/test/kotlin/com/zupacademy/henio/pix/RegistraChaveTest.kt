@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import javax.inject.Inject
 
 @MicronautTest
-class KeyManagerTest {
+class RegistraChaveTest {
 
     @Inject
     lateinit var application: EmbeddedApplication<*>

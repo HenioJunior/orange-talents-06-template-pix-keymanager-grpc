@@ -1,15 +1,15 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_outer_classname = "ChavePix";
+option java_outer_classname = "ChavePixGrpc";
 
-package com.zupacademy.henio.pix;
+package com.zupacademy.henio.pix.grpc;
 
 import "google/protobuf/timestamp.proto";
 
-service KeymanagerRegistraGrpcService {
+service RegistraChaveGrpcService {
 
-  rpc registra(RegistraChavePixRequest) returns (RegistraChavePixResponse) {}
+  rpc registra(RegistraChaveRequest) returns (RegistraChaveResponse) {}
 }
 
 enum TipoChave {
@@ -26,14 +26,14 @@ enum TipoConta {
   CONTA_POUPANCA     = 2;
 }
 
-message RegistraChavePixRequest {
+message RegistraChaveRequest {
   string clienteId        = 1;
-  TipoChave tipoDeChave = 2;
-  string chave            = 3;
-  TipoConta tipoDeConta = 4;
+  TipoChave tipoChave = 2;
+  string valorChave            = 3;
+  TipoConta tipoConta = 4;
 }
 
-message RegistraChavePixResponse {
+message RegistraChaveResponse {
   string clienteId = 1;
   string pixId     = 2;
 }

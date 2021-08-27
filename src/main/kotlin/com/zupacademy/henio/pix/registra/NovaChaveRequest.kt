@@ -1,7 +1,6 @@
 package com.zupacademy.henio.pix.registra
 
-import com.zupacademy.henio.pix.ChavePixEntity
-import com.zupacademy.henio.pix.TipoChave
+import com.zupacademy.henio.pix.ChaveEntity
 import com.zupacademy.henio.pix.TipoDeChave
 import com.zupacademy.henio.pix.TipoDeConta
 import com.zupacademy.henio.pix.validacoes.ValidaChavePix
@@ -14,28 +13,28 @@ import javax.validation.constraints.Size
 
 @ValidaChavePix
 @Introspected
-class NovaChavePix(
+class NovaChaveRequest(
     @ValidaUUID
     @field: NotBlank
     val clienteId: String?,
 
     @field: NotNull
-    val tipo: TipoDeChave?,
+    val tipoChave: TipoDeChave?,
 
     @field: Size(max = 77)
-    val chave: String?,
+    val valorChave: String?,
 
     @field: NotNull
-    val tipoDeConta: TipoDeConta?
+    val tipoConta: TipoDeConta?
 ) {
 
-    fun toModel(conta: ContaAssociada): ChavePixEntity {
-        return ChavePixEntity(
+    fun toModel(conta: ContaAssociada): ChaveEntity {
+        return ChaveEntity(
             clienteId = UUID.fromString(this.clienteId),
-            tipo = TipoDeChave.valueOf(this.tipo!!.name),
-            chave = if(this.tipo == TipoDeChave.RANDOM) UUID.randomUUID().toString()
-            else this.chave!!,
-            tipoDeConta = TipoDeConta.valueOf(this.tipoDeConta!!.name),
+            tipoChave = TipoDeChave.valueOf(this.tipoChave!!.name),
+            chave = if(this.tipoChave == TipoDeChave.RANDOM) UUID.randomUUID().toString()
+            else this.valorChave!!,
+            tipoConta = TipoDeConta.valueOf(this.tipoConta!!.name),
             conta = conta
         )
     }

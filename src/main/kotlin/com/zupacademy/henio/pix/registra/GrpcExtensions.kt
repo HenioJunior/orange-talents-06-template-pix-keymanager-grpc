@@ -1,22 +1,24 @@
 package com.zupacademy.henio.pix.registra
-import com.zupacademy.henio.pix.TipoChave.*
-import com.zupacademy.henio.pix.TipoConta.*
-import com.zupacademy.henio.pix.RegistraChavePixRequest
+
 import com.zupacademy.henio.pix.TipoDeChave
 import com.zupacademy.henio.pix.TipoDeConta
+import com.zupacademy.henio.pix.grpc.RegistraChaveRequest
 
-fun RegistraChavePixRequest.toModel(): NovaChavePix {
+import com.zupacademy.henio.pix.grpc.TipoChave.*
+import com.zupacademy.henio.pix.grpc.TipoConta.*
 
-    return NovaChavePix(
+fun RegistraChaveRequest.toModel(): NovaChaveRequest {
+
+    return NovaChaveRequest(
         clienteId = clienteId,
-        tipo = when(tipoDeChave) {
+        tipoChave = when(tipoChave) {
             UNKNOWN_TIPO_CHAVE -> null
-            else -> TipoDeChave.valueOf(tipoDeChave.name)
+            else -> TipoDeChave.valueOf(tipoChave.name)
         },
-        chave = chave,
-        tipoDeConta = when(tipoDeConta) {
+        valorChave = valorChave,
+        tipoConta = when(tipoConta) {
             UNKNOWN_TIPO_CONTA -> null
-            else -> TipoDeConta.valueOf(tipoDeConta.name)
+            else -> TipoDeConta.valueOf(tipoConta.name)
         }
     )
 }
