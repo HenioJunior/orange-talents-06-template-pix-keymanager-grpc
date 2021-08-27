@@ -27,7 +27,7 @@ class ExcluiChaveService(@Inject val repository: ChavePixRepository) {
 
         val chave: Optional<ChavePixEntity> = repository.findByIdAndClienteId(uuidPixId, uuidClienteId)
         if(chave.isEmpty) {
-            throw ChavePixNaoEncontradaException("Chave Pix não encontrada")
+            throw ChavePixNaoEncontradaException("Chave Pix não encontrada ou não pertence ao cliente")
         }
         repository.deleteById(uuidPixId)
     }
