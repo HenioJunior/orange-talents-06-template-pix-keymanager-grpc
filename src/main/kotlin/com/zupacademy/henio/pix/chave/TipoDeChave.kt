@@ -1,13 +1,20 @@
-package com.zupacademy.henio.pix
+package com.zupacademy.henio.pix.chave
 
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator
+import org.hibernate.validator.internal.constraintvalidators.hv.br.CPFValidator
 
 enum class TipoDeChave {
 
     CPF {
         override fun valida(chave: String?): Boolean {
 
-            return chave.isNullOrBlank()
+            if (chave.isNullOrBlank()) {
+                return false
+            }
+            return CPFValidator().run {
+                initialize(null)
+                isValid(chave, null)
+            }
         }
     },
     PHONE {

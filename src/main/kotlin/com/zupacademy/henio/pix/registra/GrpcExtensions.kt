@@ -1,7 +1,7 @@
 package com.zupacademy.henio.pix.registra
 
-import com.zupacademy.henio.pix.TipoDeChave
-import com.zupacademy.henio.pix.TipoDeConta
+import com.zupacademy.henio.pix.chave.TipoDeChave
+import com.zupacademy.henio.pix.chave.TipoDeConta
 import com.zupacademy.henio.pix.grpc.RegistraChaveRequest
 
 import com.zupacademy.henio.pix.grpc.TipoChave.*

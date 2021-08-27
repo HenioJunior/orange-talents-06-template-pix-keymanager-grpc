@@ -19,7 +19,8 @@ class RegistraChaveEndpoint(@Inject private val service: NovaChaveService)
         grpcRequest: RegistraChaveRequest,
         responseObserver: StreamObserver<RegistraChaveResponse>
     ) {
-        try{
+
+        try {
             val novaChave = grpcRequest.toModel();
             val chaveCriada = service.registra(novaChave)
             responseObserver.onNext(
@@ -34,7 +35,6 @@ class RegistraChaveEndpoint(@Inject private val service: NovaChaveService)
                     .withDescription("dados de entrada invalidos")
                     .asRuntimeException())
         }
-
         responseObserver.onCompleted()
     }
 }

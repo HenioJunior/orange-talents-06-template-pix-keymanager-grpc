@@ -1,5 +1,6 @@
 package com.zupacademy.henio.pix.registra
-import com.zupacademy.henio.pix.*
+import com.zupacademy.henio.pix.chave.*
+import com.zupacademy.henio.pix.cliente.ContasDeClientesNoItau
 import com.zupacademy.henio.pix.grpc.RegistraChaveGrpcServiceGrpc
 import com.zupacademy.henio.pix.grpc.RegistraChaveRequest
 import com.zupacademy.henio.pix.grpc.TipoChave
@@ -25,7 +26,7 @@ import javax.inject.Inject
 
 @MicronautTest(transactional = false)
 internal class RegistraChaveEndpointTest(
-    val repository: NovaChaveRepository,
+    val repository: ChavePixRepository,
     val grpcClient: RegistraChaveGrpcServiceGrpc.RegistraChaveGrpcServiceBlockingStub
 ) {
 
@@ -75,13 +76,14 @@ internal class RegistraChaveEndpointTest(
             .thenReturn(HttpResponse.ok(dadosDaContaResponse()))
 
         repository.save(
-            ChaveEntity(
+            ChavePixEntity(
             clienteId = UUID.fromString(CLIENTE_ID),
             tipoChave = TipoDeChave.EMAIL,
             chave = "rponte@gmail.com",
             tipoConta = TipoDeConta.CONTA_CORRENTE,
             conta = contaAssociada
-        ))
+        )
+        )
 
         val excecao = assertThrows<StatusRuntimeException> {
             grpcClient.registra(RegistraChaveRequest.newBuilder()

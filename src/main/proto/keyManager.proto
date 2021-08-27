@@ -7,10 +7,38 @@ package com.zupacademy.henio.pix.grpc;
 
 import "google/protobuf/timestamp.proto";
 
-service RegistraChaveGrpcService {
 
+service RegistraChaveGrpcService {
   rpc registra(RegistraChaveRequest) returns (RegistraChaveResponse) {}
 }
+
+message RegistraChaveRequest {
+  string clienteId        = 1;
+  TipoChave tipoChave     = 2;
+  string valorChave       = 3;
+  TipoConta tipoConta     = 4;
+}
+
+message RegistraChaveResponse {
+  string clienteId        = 1;
+  string pixId            = 2;
+}
+
+
+service ExcluiChaveGrpcService {
+  rpc exclui(ExcluiChaveRequest) returns (ExcluiChaveResponse) {}
+}
+
+message ExcluiChaveRequest {
+  string clienteId        = 1;
+  string pixId            = 2;
+}
+
+message ExcluiChaveResponse {
+  string clienteId        = 1;
+  string pixId            = 2;
+}
+
 
 enum TipoChave {
   UNKNOWN_TIPO_CHAVE = 0;
@@ -26,14 +54,4 @@ enum TipoConta {
   CONTA_POUPANCA     = 2;
 }
 
-message RegistraChaveRequest {
-  string clienteId        = 1;
-  TipoChave tipoChave = 2;
-  string valorChave            = 3;
-  TipoConta tipoConta = 4;
-}
 
-message RegistraChaveResponse {
-  string clienteId = 1;
-  string pixId     = 2;
-}

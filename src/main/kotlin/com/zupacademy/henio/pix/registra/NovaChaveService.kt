@@ -1,9 +1,10 @@
 package com.zupacademy.henio.pix.registra
 
-import com.zupacademy.henio.pix.ChaveEntity
+import com.zupacademy.henio.pix.chave.ChavePixEntity
+import com.zupacademy.henio.pix.chave.ChavePixRepository
+import com.zupacademy.henio.pix.cliente.ContasDeClientesNoItau
 import com.zupacademy.henio.pix.exceptions.ChavePixExistenteException
 import io.micronaut.validation.Validated
-import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.transaction.Transactional
@@ -12,11 +13,12 @@ import javax.validation.Valid
 @Validated
 @Singleton
 class NovaChaveService(
-    @Inject val repository: NovaChaveRepository,
-    @Inject val itauClient: ContasDeClientesNoItau){
+    @Inject val repository: ChavePixRepository,
+    @Inject val itauClient: ContasDeClientesNoItau
+){
 
     @Transactional
-    fun registra(@Valid novaChave: NovaChaveRequest): ChaveEntity {
+    fun registra(@Valid novaChave: NovaChaveRequest): ChavePixEntity {
 
         if(repository.existsByChave(novaChave.valorChave))
             throw ChavePixExistenteException("Chave Pix ${novaChave.valorChave} existente")

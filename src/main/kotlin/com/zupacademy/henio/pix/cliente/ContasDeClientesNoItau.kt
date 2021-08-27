@@ -1,5 +1,6 @@
-package com.zupacademy.henio.pix.registra
+package com.zupacademy.henio.pix.cliente
 
+import com.zupacademy.henio.pix.registra.DadosDaContaResponse
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
@@ -13,5 +14,7 @@ interface ContasDeClientesNoItau {
     @Get("/api/v1/clientes/{clienteId}/contas{?tipo}")
     fun buscaContaPorTipo(@PathVariable clienteId: String, @QueryValue tipo: String)
             : HttpResponse<DadosDaContaResponse>
+
+    fun buscaContaPorIdDoCliente(idCliente: Any): Any
 
 }

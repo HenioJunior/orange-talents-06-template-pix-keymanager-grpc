@@ -1,5 +1,7 @@
 package com.zupacademy.henio.pix.registra
 
+import com.zupacademy.henio.pix.chave.ContaAssociada
+
 class DadosDaContaResponse(
     val tipo: String,
     val instituicao: InstituicaoResponse,

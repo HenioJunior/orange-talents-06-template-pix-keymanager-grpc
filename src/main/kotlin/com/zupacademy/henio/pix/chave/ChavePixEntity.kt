@@ -1,6 +1,5 @@
-package com.zupacademy.henio.pix
+package com.zupacademy.henio.pix.chave
 
-import com.zupacademy.henio.pix.registra.ContaAssociada
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -9,7 +8,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 @Entity
-class ChaveEntity(
+class ChavePixEntity(
     @field: NotNull
     @Column(nullable = false)
     val clienteId: UUID,
@@ -38,5 +37,9 @@ class ChaveEntity(
 
     @Column(nullable = false)
     val criadaEm: LocalDateTime = LocalDateTime.now()
+
+    fun eDoCliente(idCliente: String): Boolean {
+        return UUID.fromString(idCliente) == this.clienteId
+    }
 
 }

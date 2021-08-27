@@ -1,8 +1,9 @@
 package com.zupacademy.henio.pix.registra
 
-import com.zupacademy.henio.pix.ChaveEntity
-import com.zupacademy.henio.pix.TipoDeChave
-import com.zupacademy.henio.pix.TipoDeConta
+import com.zupacademy.henio.pix.chave.ChavePixEntity
+import com.zupacademy.henio.pix.chave.TipoDeChave
+import com.zupacademy.henio.pix.chave.TipoDeConta
+import com.zupacademy.henio.pix.chave.ContaAssociada
 import com.zupacademy.henio.pix.validacoes.ValidaChavePix
 import com.zupacademy.henio.pix.validacoes.ValidaUUID
 import io.micronaut.core.annotation.Introspected
@@ -28,12 +29,15 @@ class NovaChaveRequest(
     val tipoConta: TipoDeConta?
 ) {
 
-    fun toModel(conta: ContaAssociada): ChaveEntity {
-        return ChaveEntity(
+    fun toModel(conta: ContaAssociada): ChavePixEntity {
+        return ChavePixEntity(
             clienteId = UUID.fromString(this.clienteId),
             tipoChave = TipoDeChave.valueOf(this.tipoChave!!.name),
-            chave = if(this.tipoChave == TipoDeChave.RANDOM) UUID.randomUUID().toString()
-            else this.valorChave!!,
+            chave = when (this.tipoChave) {
+                TipoDeChave.RANDOM -> UUID.randomUUID().toString()
+                TipoDeChave.CPF -> conta.cpfDoTitular
+                else -> this.valorChave.toString()
+            },
             tipoConta = TipoDeConta.valueOf(this.tipoConta!!.name),
             conta = conta
         )
