@@ -9,14 +9,15 @@ class DadosDaContaResponse(
     val numero: String,
     val titular: TitularResponse) {
 
-    fun toModel(): ContaAssociada {
+    fun associaConta(): ContaAssociada {
 
         return ContaAssociada(
             instituicao = this.instituicao.nome,
             nomeDoTitular = this.titular.nome,
             cpfDoTitular = this.titular.cpf,
             agencia = this.agencia,
-            numero = this.numero
+            numero = this.numero,
+            ispb = this.instituicao.ispb
         )
     }
 }

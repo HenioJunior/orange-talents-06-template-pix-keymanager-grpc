@@ -8,7 +8,7 @@ import com.zupacademy.henio.pix.grpc.TipoChave.UNKNOWN_TIPO_CHAVE
 import com.zupacademy.henio.pix.grpc.TipoConta.UNKNOWN_TIPO_CONTA
 import com.zupacademy.henio.pix.remove.RemoveChaveRequest
 
-fun RegistraChaveRequest.toModel(): NovaChaveRequest {
+fun RegistraChaveRequest.toDTO(): NovaChaveRequest {
 
     return NovaChaveRequest(
         clienteId = clienteId,

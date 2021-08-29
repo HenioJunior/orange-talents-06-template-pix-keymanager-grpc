@@ -38,4 +38,8 @@ class ChavePixEntity(
     @Column(nullable = false)
     val criadaEm: LocalDateTime = LocalDateTime.now()
 
+    fun eDoCliente(clienteId: String): Boolean {
+        return UUID.fromString(clienteId) == this.clienteId
+    }
+
 }

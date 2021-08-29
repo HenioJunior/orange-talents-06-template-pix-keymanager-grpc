@@ -1,5 +1,5 @@
 package com.zupacademy.henio.pix.exceptions
 
-class ClienteNaoEDonoDaChaveException(
+class InconsistenciaDeDadosException(
     override val message: String?
 ) : Exception()

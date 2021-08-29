@@ -1,9 +1,11 @@
 package com.zupacademy.henio.pix.registra
 
-import com.zupacademy.henio.pix.chave.ChavePixEntity
+import com.zupacademy.henio.pix.chave.ContaAssociada
 import com.zupacademy.henio.pix.chave.TipoDeChave
 import com.zupacademy.henio.pix.chave.TipoDeConta
-import com.zupacademy.henio.pix.chave.ContaAssociada
+import com.zupacademy.henio.pix.cliente.bcb.BankAccount
+import com.zupacademy.henio.pix.cliente.bcb.CreatePixKeyRequest
+import com.zupacademy.henio.pix.cliente.bcb.Owner
 import com.zupacademy.henio.pix.validacoes.ValidaChavePix
 import com.zupacademy.henio.pix.validacoes.ValidaUUID
 import io.micronaut.core.annotation.Introspected
@@ -29,17 +31,29 @@ class NovaChaveRequest(
     val tipoConta: TipoDeConta?
 ) {
 
-    fun toModel(conta: ContaAssociada): ChavePixEntity {
-        return ChavePixEntity(
-            clienteId = UUID.fromString(this.clienteId),
-            tipoChave = TipoDeChave.valueOf(this.tipoChave!!.name),
-            chave = when (this.tipoChave) {
-                TipoDeChave.RANDOM -> UUID.randomUUID().toString()
+    fun toBcRequest(conta: ContaAssociada): CreatePixKeyRequest {
+
+        return CreatePixKeyRequest(
+            keyType = tipoChave.toString(),
+            key = when(tipoChave) {
+                TipoDeChave.RANDOM -> ""
                 TipoDeChave.CPF -> conta.cpfDoTitular
-                else -> this.valorChave.toString()
-            },
-            tipoConta = TipoDeConta.valueOf(this.tipoConta!!.name),
-            conta = conta
+                else -> valorChave
+            }!!,
+            bankAccount = BankAccount(
+                participant = conta.ispb,
+                branch = conta.agencia,
+                accountNumber = conta.numero,
+                accountType = when(tipoConta!!) {
+                    TipoDeConta.CONTA_CORRENTE -> BankAccount.AccountType.CACC
+                    TipoDeConta.CONTA_POUPANCA -> BankAccount.AccountType.SVGS
+                }
+            ),
+            owner = Owner(
+                type = "NATURAL_PERSON",
+                name = conta.nomeDoTitular,
+                taxIdNumber = conta.cpfDoTitular
+            )
         )
     }
 }
