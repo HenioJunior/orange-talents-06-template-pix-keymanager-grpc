@@ -1,4 +1,4 @@
-package com.zupacademy.henio.pix.chave
+package com.zupacademy.henio.pix.cliente.itau
 
 import javax.persistence.Embeddable
 

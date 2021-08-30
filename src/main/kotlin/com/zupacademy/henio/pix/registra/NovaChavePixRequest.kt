@@ -1,9 +1,9 @@
 package com.zupacademy.henio.pix.registra
 
-import com.zupacademy.henio.pix.chave.ChavePixEntity
+import com.zupacademy.henio.pix.chave.ChavePix
 import com.zupacademy.henio.pix.chave.TipoDeChave
 import com.zupacademy.henio.pix.chave.TipoDeConta
-import com.zupacademy.henio.pix.chave.ContaAssociada
+import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
 import com.zupacademy.henio.pix.validacoes.ValidaChavePix
 import com.zupacademy.henio.pix.validacoes.ValidaUUID
 import io.micronaut.core.annotation.Introspected
@@ -14,31 +14,31 @@ import javax.validation.constraints.Size
 
 @ValidaChavePix
 @Introspected
-class NovaChaveRequest(
+class NovaChavePixRequest(
     @ValidaUUID
     @field: NotBlank
     val clienteId: String?,
 
     @field: NotNull
-    val tipoChave: TipoDeChave?,
+    val tipoDeChave: TipoDeChave?,
 
     @field: Size(max = 77)
-    val valorChave: String?,
+    val valorDaChave: String?,
 
     @field: NotNull
-    val tipoConta: TipoDeConta?
+    val tipoDeConta: TipoDeConta?
 ) {
 
-    fun toModel(conta: ContaAssociada): ChavePixEntity {
-        return ChavePixEntity(
+    fun toModel(conta: ContaAssociada): ChavePix {
+        return ChavePix(
             clienteId = UUID.fromString(this.clienteId),
-            tipoChave = TipoDeChave.valueOf(this.tipoChave!!.name),
-            chave = when (this.tipoChave) {
+            tipoDeChave = TipoDeChave.valueOf(this.tipoDeChave!!.name),
+            chave = when (this.tipoDeChave) {
                 TipoDeChave.RANDOM -> UUID.randomUUID().toString()
                 TipoDeChave.CPF -> conta.cpfDoTitular
-                else -> this.valorChave.toString()
+                else -> this.valorDaChave.toString()
             },
-            tipoConta = TipoDeConta.valueOf(this.tipoConta!!.name),
+            tipoDeConta = TipoDeConta.valueOf(this.tipoDeConta!!.name),
             conta = conta
         )
     }

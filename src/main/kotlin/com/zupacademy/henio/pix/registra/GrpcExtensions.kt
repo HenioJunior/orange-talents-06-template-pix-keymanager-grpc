@@ -2,29 +2,29 @@ package com.zupacademy.henio.pix.registra
 
 import com.zupacademy.henio.pix.chave.TipoDeChave
 import com.zupacademy.henio.pix.chave.TipoDeConta
-import com.zupacademy.henio.pix.grpc.ExcluiChaveRequest
-import com.zupacademy.henio.pix.grpc.RegistraChaveRequest
-import com.zupacademy.henio.pix.grpc.TipoChave.UNKNOWN_TIPO_CHAVE
-import com.zupacademy.henio.pix.grpc.TipoConta.UNKNOWN_TIPO_CONTA
-import com.zupacademy.henio.pix.remove.RemoveChaveRequest
+import com.zupacademy.henio.pix.grpc.AccountType
+import com.zupacademy.henio.pix.grpc.KeyType
+import com.zupacademy.henio.pix.grpc.PixKeyDeleteRequest
+import com.zupacademy.henio.pix.grpc.PixKeyRequest
+import com.zupacademy.henio.pix.remove.RemoveChavePixRequest
 
-fun RegistraChaveRequest.toModel(): NovaChaveRequest {
+fun PixKeyRequest.toDto(): NovaChavePixRequest {
 
-    return NovaChaveRequest(
-        clienteId = clienteId,
-        tipoChave = when(tipoChave) {
-            UNKNOWN_TIPO_CHAVE -> null
-            else -> TipoDeChave.valueOf(tipoChave.name)
+    return NovaChavePixRequest(
+        clienteId = clientId,
+        tipoDeChave = when(keyType) {
+            KeyType.UNKNOWN_KEY -> null
+            else -> TipoDeChave.valueOf(keyType.name)
         },
-        valorChave = valorChave,
-        tipoConta = when(tipoConta) {
-            UNKNOWN_TIPO_CONTA -> null
-            else -> TipoDeConta.valueOf(tipoConta.name)
+        valorDaChave = key,
+        tipoDeConta = when(accountType) {
+            AccountType.UNKNOWN_ACCOUNT -> null
+            else -> TipoDeConta.valueOf(accountType.name)
         }
     )
 }
 
-fun ExcluiChaveRequest.toRemoveRequest(): RemoveChaveRequest {
+fun PixKeyDeleteRequest.toRemoveRequest(): RemoveChavePixRequest {
 
-    return RemoveChaveRequest(clienteId, pixId)
+    return RemoveChavePixRequest(clientId, pixId)
 }

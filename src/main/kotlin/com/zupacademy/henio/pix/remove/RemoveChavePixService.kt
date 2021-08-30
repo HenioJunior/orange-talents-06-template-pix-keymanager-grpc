@@ -1,10 +1,10 @@
 package com.zupacademy.henio.pix.remove
 
-import com.zupacademy.henio.pix.chave.ChavePixEntity
 import com.zupacademy.henio.pix.chave.ChavePixRepository
 import com.zupacademy.henio.pix.cliente.BancoCentralClient
 import com.zupacademy.henio.pix.cliente.DeletePixKeyRequest
 import com.zupacademy.henio.pix.exceptions.ChavePixNaoEncontradaException
+import com.zupacademy.henio.pix.validacoes.ValidaUUID
 import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
@@ -12,24 +12,32 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.transaction.Transactional
-import javax.validation.Valid
+import javax.validation.constraints.NotBlank
 
 
 @Validated
 @Singleton
-class RemoveChaveService(
+class RemoveChavePixService(
     @Inject val repository: ChavePixRepository,
     @Inject val bcbClient: BancoCentralClient
-    ){
+    ) {
 
     private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
     @Transactional
-    fun exclui(@Valid request: RemoveChaveRequest): ChavePixEntity{
+    fun exclui(
+        @NotBlank @ValidaUUID(message = "cliente ID com formato inválido") clienteId: String?,
+        @NotBlank @ValidaUUID(message = "pix ID com formato inválido") pixId: String?
+    ) {
 
-        val chave: ChavePixEntity = buscarChave(request)
+        val uuidPixId = UUID.fromString(pixId)
+        val uuidClientId = UUID.fromString(clienteId)
 
-        repository.delete(chave)
+        val chave = repository.findByIdAndClienteId(uuidPixId, uuidClientId).orElseThrow {
+            ChavePixNaoEncontradaException("Chave Pix não encontrada ou não pertence ao cliente")
+        }
+
+        repository.deleteById(uuidPixId)
 
         val request = DeletePixKeyRequest(chave.chave)
 
@@ -37,19 +45,6 @@ class RemoveChaveService(
         if(bcbResponse.status != HttpStatus.OK) {
             throw IllegalStateException("Erro ao remover chave Pix no Banco Central do Brasil (BCB)")
         }
-
-        return chave
-    }
-
-
-    private fun buscarChave(request: RemoveChaveRequest): ChavePixEntity {
-
-        val possivelChave:Optional<ChavePixEntity> = repository.findById(UUID.fromString(request.pixId))
-        if(possivelChave.isEmpty) {
-            LOGGER.error("Chave não encontrada")
-            throw ChavePixNaoEncontradaException("Chave não encontrada")
-        }
-        return possivelChave.get()
     }
 }
 

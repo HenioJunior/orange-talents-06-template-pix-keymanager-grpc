@@ -1,6 +1,6 @@
 package com.zupacademy.henio.pix.registra
 
-import com.zupacademy.henio.pix.chave.ContaAssociada
+import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
 
 class DadosDaContaResponse(
     val tipo: String,
@@ -9,7 +9,7 @@ class DadosDaContaResponse(
     val numero: String,
     val titular: TitularResponse) {
 
-    fun toModel(): ContaAssociada {
+    fun associaConta(): ContaAssociada {
 
         return ContaAssociada(
             instituicao = this.instituicao.nome,

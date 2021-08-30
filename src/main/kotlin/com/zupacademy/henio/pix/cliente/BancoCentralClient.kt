@@ -1,14 +1,16 @@
 package com.zupacademy.henio.pix.cliente
 
-import com.zupacademy.henio.pix.chave.ChavePixEntity
-import com.zupacademy.henio.pix.chave.ContaAssociada
+import com.zupacademy.henio.pix.chave.ChavePix
+import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
 import com.zupacademy.henio.pix.chave.TipoDeChave
 import com.zupacademy.henio.pix.chave.TipoDeConta
+import com.zupacademy.henio.pix.registra.NovaChavePixRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.*
 import io.micronaut.http.client.annotation.Client
 import java.time.LocalDateTime
+import java.util.*
 
 @Client("\${bc.pix.url}")
 interface BancoCentralClient {
@@ -48,15 +50,15 @@ data class CreatePixKeyRequest(
 ) {
     companion object {
 
-        fun of(chave: ChavePixEntity): CreatePixKeyRequest {
+        fun of(chave: ChavePix): CreatePixKeyRequest {
             return CreatePixKeyRequest(
-                keyType = PixKeyType.by(chave.tipoChave),
+                keyType = PixKeyType.by(chave.tipoDeChave),
                 key = chave.chave,
                 bankAccount = BankAccount (
                     participant =  "60701190",
                     branch = chave.conta.agencia,
                     accountNumber = chave.conta.numero,
-                    accountType =  BankAccount.AccountType.by(chave.tipoConta),
+                    accountType =  BankAccount.AccountType.by(chave.tipoDeConta),
                 ),
                 owner = Owner(
                     type = Owner.OwnerType.NATURAL_PERSON,
@@ -65,6 +67,25 @@ data class CreatePixKeyRequest(
                 )
             )
         }
+    }
+}
+
+data class CreatePixKeyResponse (
+    val keyType: String,
+    val key: String,
+    val bankAccount: BankAccount,
+    val owner: Owner,
+    val createdAt: LocalDateTime
+) {
+    fun toChavePix(request: NovaChavePixRequest, conta: ContaAssociada) : ChavePix {
+
+        return ChavePix(
+            clienteId = UUID.fromString(request.clienteId),
+            chave = key,
+            tipoDeChave = TipoDeChave.valueOf(keyType),
+            tipoDeConta = TipoDeConta.valueOf(request.tipoDeConta!!.name),
+            conta = conta
+        )
     }
 }
 
@@ -103,13 +124,6 @@ data class ChavePixInfo (
 
     )
 
-data class CreatePixKeyResponse (
-    val keyType: String,
-    val key: String,
-    val bankAccount: BankAccount,
-    val owner: Owner,
-    val createdAt: LocalDateTime
-)
 
 data class Owner (
     val type: OwnerType,
