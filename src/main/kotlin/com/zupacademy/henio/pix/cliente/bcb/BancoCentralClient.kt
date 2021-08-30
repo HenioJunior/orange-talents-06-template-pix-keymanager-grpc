@@ -1,16 +1,15 @@
-package com.zupacademy.henio.pix.cliente
+package com.zupacademy.henio.pix.cliente.bcb
 
 import com.zupacademy.henio.pix.chave.ChavePix
-import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
 import com.zupacademy.henio.pix.chave.TipoDeChave
 import com.zupacademy.henio.pix.chave.TipoDeConta
-import com.zupacademy.henio.pix.registra.NovaChavePixRequest
+import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
+import com.zupacademy.henio.pix.grpc.PixKeyGetResponse
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.*
 import io.micronaut.http.client.annotation.Client
 import java.time.LocalDateTime
-import java.util.*
 
 @Client("\${bc.pix.url}")
 interface BancoCentralClient {
@@ -76,54 +75,7 @@ data class CreatePixKeyResponse (
     val bankAccount: BankAccount,
     val owner: Owner,
     val createdAt: LocalDateTime
-) {
-    fun toChavePix(request: NovaChavePixRequest, conta: ContaAssociada) : ChavePix {
-
-        return ChavePix(
-            clienteId = UUID.fromString(request.clienteId),
-            chave = key,
-            tipoDeChave = TipoDeChave.valueOf(keyType),
-            tipoDeConta = TipoDeConta.valueOf(request.tipoDeConta!!.name),
-            conta = conta
-        )
-    }
-}
-
-data class PixKeyDetailsResponse(
-    val keyType: PixKeyType,
-    val key: String,
-    val bankAccount: BankAccount,
-    val owner: Owner,
-    val createdAt: LocalDateTime
-) {
-
-    fun toModel(): ChavePixInfo {
-        return ChavePixInfo(
-            tipoChave = keyType.domainType!!,
-            chave = this.key,
-            tipoConta = when (this.bankAccount.accountType) {
-                BankAccount.AccountType.CACC -> TipoDeConta.CONTA_CORRENTE
-                BankAccount.AccountType.SVGS -> TipoDeConta.CONTA_POUPANCA
-            },
-            conta = ContaAssociada(
-                instituicao = bankAccount.participant,
-                nomeDoTitular = owner.name,
-                cpfDoTitular = owner.taxIdNumber,
-                agencia = bankAccount.branch,
-                numero = bankAccount.accountNumber
-            )
-        )
-    }
-}
-
-data class ChavePixInfo (
-    val tipoChave: TipoDeChave,
-    var chave: String,
-    val tipoConta: TipoDeConta,
-    val conta: ContaAssociada,
-
-    )
-
+)
 
 data class Owner (
     val type: OwnerType,

@@ -2,9 +2,9 @@ package com.zupacademy.henio.pix.registra
 
 import com.zupacademy.henio.pix.chave.ChavePix
 import com.zupacademy.henio.pix.chave.ChavePixRepository
-import com.zupacademy.henio.pix.cliente.BancoCentralClient
-import com.zupacademy.henio.pix.cliente.BancoItauClient
-import com.zupacademy.henio.pix.cliente.CreatePixKeyRequest
+import com.zupacademy.henio.pix.cliente.bcb.BancoCentralClient
+import com.zupacademy.henio.pix.cliente.bcb.CreatePixKeyRequest
+import com.zupacademy.henio.pix.cliente.itau.BancoItauClient
 import com.zupacademy.henio.pix.exceptions.ChavePixExistenteException
 import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated

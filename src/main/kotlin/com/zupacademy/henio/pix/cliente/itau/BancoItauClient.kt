@@ -1,4 +1,4 @@
-package com.zupacademy.henio.pix.cliente
+package com.zupacademy.henio.pix.cliente.itau
 
 import com.zupacademy.henio.pix.registra.DadosDaContaResponse
 import io.micronaut.http.HttpResponse

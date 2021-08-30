@@ -4,6 +4,7 @@ import com.zupacademy.henio.pix.exceptions.handlers.ErrorHandler
 import com.zupacademy.henio.pix.grpc.PixKeyRegisterServiceGrpc
 import com.zupacademy.henio.pix.grpc.PixKeyRequest
 import com.zupacademy.henio.pix.grpc.PixKeyResponse
+import com.zupacademy.henio.pix.toDto
 import io.grpc.stub.StreamObserver
 import javax.inject.Inject
 import javax.inject.Singleton

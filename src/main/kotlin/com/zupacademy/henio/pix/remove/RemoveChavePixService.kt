@@ -1,8 +1,8 @@
 package com.zupacademy.henio.pix.remove
 
 import com.zupacademy.henio.pix.chave.ChavePixRepository
-import com.zupacademy.henio.pix.cliente.BancoCentralClient
-import com.zupacademy.henio.pix.cliente.DeletePixKeyRequest
+import com.zupacademy.henio.pix.cliente.bcb.BancoCentralClient
+import com.zupacademy.henio.pix.cliente.bcb.DeletePixKeyRequest
 import com.zupacademy.henio.pix.exceptions.ChavePixNaoEncontradaException
 import com.zupacademy.henio.pix.validacoes.ValidaUUID
 import io.micronaut.http.HttpStatus

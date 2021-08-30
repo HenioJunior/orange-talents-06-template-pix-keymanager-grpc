@@ -1,9 +1,6 @@
 package com.zupacademy.henio.pix.chave
 
-import com.zupacademy.henio.pix.cliente.CreatePixKeyRequest
-import com.zupacademy.henio.pix.cliente.CreatePixKeyResponse
 import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
-import com.zupacademy.henio.pix.registra.NovaChavePixRequest
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -36,12 +33,15 @@ class ChavePix(
     val conta: ContaAssociada,
 ) {
 
-
     @Id
     @GeneratedValue
     val id: UUID? = null
 
     @Column(nullable = false)
     val criadaEm: LocalDateTime = LocalDateTime.now()
+
+    fun eDoCliente(clienteId: String): Boolean {
+        return UUID.fromString(clienteId) == this.clienteId
+    }
 
 }

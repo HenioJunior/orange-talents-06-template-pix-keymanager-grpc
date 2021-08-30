@@ -12,6 +12,14 @@ service PixKeyRegisterService {
   rpc register(PixKeyRequest) returns (PixKeyResponse) {}
 }
 
+service PixKeyDeleteService {
+  rpc delete(PixKeyDeleteRequest) returns (PixKeyDeleteResponse) {}
+}
+
+service PixKeyGetService {
+  rpc get (PixKeyGetRequest) returns (PixKeyGetResponse) {}
+}
+
 message PixKeyRequest {
   string clientId         = 1;
   KeyType keyType         = 2;
@@ -24,10 +32,6 @@ message PixKeyResponse {
   string pixId            = 2;
 }
 
-
-service PixKeyDeleteService {
-  rpc delete(PixKeyDeleteRequest) returns (PixKeyDeleteResponse) {}
-}
 
 message PixKeyDeleteRequest {
   string clientId         = 1;
@@ -53,5 +57,42 @@ enum AccountType {
   CONTA_CORRENTE     = 1;
   CONTA_POUPANCA     = 2;
 }
+
+message PixKeyGetRequest {
+  message FilterByPixId {
+    string clientId   = 1;
+    string pixId      = 2;
+  }
+
+  oneof filter {
+    FilterByPixId pixId = 1;
+    string chave        = 2;
+  }
+}
+
+message PixKeyGetResponse {
+  message PixKey {
+
+    message AccountInfo {
+      AccountType accountType = 1;
+      string participant = 2;
+      string name = 3;
+      string taxIdNumber = 4;
+      string branch = 5;
+      string accountNumber = 6;
+    }
+
+    KeyType type = 1;
+    string key = 2;
+    AccountInfo account = 3;
+    google.protobuf.Timestamp createdAt = 4;
+  }
+
+  string clientId = 1;
+  string pixId = 2;
+  PixKey key = 3;
+}
+
+
 
 

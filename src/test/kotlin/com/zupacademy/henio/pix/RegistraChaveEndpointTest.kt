@@ -2,6 +2,7 @@ package com.zupacademy.henio.pix
 import com.zupacademy.henio.pix.chave.*
 import com.zupacademy.henio.pix.cliente.*
 import com.zupacademy.henio.pix.cliente.CreatePixKeyResponse
+import com.zupacademy.henio.pix.cliente.itau.BancoItauClient
 import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
 import com.zupacademy.henio.pix.grpc.*
 import com.zupacademy.henio.pix.registra.DadosDaContaResponse

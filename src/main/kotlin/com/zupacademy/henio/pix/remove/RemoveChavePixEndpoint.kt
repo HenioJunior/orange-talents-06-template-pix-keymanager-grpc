@@ -4,7 +4,7 @@ import com.zupacademy.henio.pix.exceptions.handlers.ErrorHandler
 import com.zupacademy.henio.pix.grpc.PixKeyDeleteRequest
 import com.zupacademy.henio.pix.grpc.PixKeyDeleteResponse
 import com.zupacademy.henio.pix.grpc.PixKeyDeleteServiceGrpc
-import com.zupacademy.henio.pix.registra.toRemoveRequest
+import com.zupacademy.henio.pix.toRemoveRequest
 import io.grpc.stub.StreamObserver
 import javax.inject.Inject
 import javax.inject.Singleton

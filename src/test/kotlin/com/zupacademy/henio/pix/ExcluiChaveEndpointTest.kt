@@ -1,7 +1,6 @@
 package com.zupacademy.henio.pix
 import com.zupacademy.henio.pix.chave.*
 import com.zupacademy.henio.pix.cliente.BancoCentralClient
-import com.zupacademy.henio.pix.cliente.BancoItauClient
 import com.zupacademy.henio.pix.cliente.DeletePixKeyRequest
 import com.zupacademy.henio.pix.cliente.DeletePixKeyResponse
 import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
