@@ -63,7 +63,7 @@ sealed class Filtro {
     @Introspected
     class Invalido() : Filtro() {
 
-        override fun filtra(repository: ChavePixRepository, bcpClient: BancoCentralClient): ChavePixInfo {
+        override fun filtra(repository: ChavePixRepository, bcbClient: BancoCentralClient): ChavePixInfo {
             throw IllegalArgumentException("Chave Pix inválida ou não informada")
         }
     }

@@ -17,9 +17,7 @@ class RemoveChavePixEndpoint(
     override fun delete(request: PixKeyDeleteRequest,
                         responseObserver: StreamObserver<PixKeyDeleteResponse>) {
 
-        val exclusaoRequest = request.toRemoveRequest()
-
-        val chaveExcluida = service.exclui(request.clientId, request.pixId)
+        service.exclui(request.clientId, request.pixId)
 
         responseObserver.onNext(PixKeyDeleteResponse.newBuilder()
             .setClientId(request.clientId)

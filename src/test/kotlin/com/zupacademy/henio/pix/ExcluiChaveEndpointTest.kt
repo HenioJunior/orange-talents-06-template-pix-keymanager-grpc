@@ -1,8 +1,11 @@
 package com.zupacademy.henio.pix
-import com.zupacademy.henio.pix.chave.*
-import com.zupacademy.henio.pix.cliente.BancoCentralClient
-import com.zupacademy.henio.pix.cliente.DeletePixKeyRequest
-import com.zupacademy.henio.pix.cliente.DeletePixKeyResponse
+import com.zupacademy.henio.pix.chave.ChavePix
+import com.zupacademy.henio.pix.chave.ChavePixRepository
+import com.zupacademy.henio.pix.chave.TipoDeChave
+import com.zupacademy.henio.pix.chave.TipoDeConta
+import com.zupacademy.henio.pix.cliente.bcb.BancoCentralClient
+import com.zupacademy.henio.pix.cliente.bcb.DeletePixKeyRequest
+import com.zupacademy.henio.pix.cliente.bcb.DeletePixKeyResponse
 import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
 import com.zupacademy.henio.pix.grpc.PixKeyDeleteRequest
 import com.zupacademy.henio.pix.grpc.PixKeyDeleteServiceGrpc
@@ -56,9 +59,11 @@ internal class ExcluiChaveEndpointTest (
     fun `deve excluir chave pix existente`() {
 
         Mockito.`when`(bcbClient.excluiChaveNoBC("rponte@gmail.com", DeletePixKeyRequest("rponte@gmail.com")))
-            .thenReturn(HttpResponse.ok(DeletePixKeyResponse("rponte@gmail.com",
+            .thenReturn(HttpResponse.ok(
+                DeletePixKeyResponse("rponte@gmail.com",
                                                                 participant = "60701190",
-                                                                deletedAt = LocalDateTime.now() )))
+                                                                deletedAt = LocalDateTime.now() )
+            ))
 
         val response = grpcClient.delete(
             PixKeyDeleteRequest.newBuilder()

@@ -32,7 +32,7 @@ fun PixKeyDeleteRequest.toRemoveRequest(): RemoveChavePixRequest {
 }
 
 fun PixKeyGetRequest.toFiltro(validator: Validator): Filtro {
-    val filtro = when(filterCase) {
+    val filtro = when(filterCase!!) {
         PIXID -> pixId.let {
             Filtro.PorPixId(clienteId = it.clientId, pixId = it.pixId)
         }
