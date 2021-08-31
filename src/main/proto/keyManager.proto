@@ -20,6 +20,11 @@ service PixKeyGetService {
   rpc get (PixKeyGetRequest) returns (PixKeyGetResponse) {}
 }
 
+service PixKeyListService {
+  rpc list(PixKeyListRequest) returns (PixKeyListResponse) {}
+}
+
+
 message PixKeyRequest {
   string clientId         = 1;
   KeyType keyType         = 2;
@@ -91,6 +96,24 @@ message PixKeyGetResponse {
   string clientId = 1;
   string pixId = 2;
   PixKey key = 3;
+}
+
+message PixKeyListRequest {
+  string clientId = 1;
+}
+
+message PixKeyListResponse {
+
+  message PixKey {
+    string pixId = 1;
+    KeyType keyType = 2;
+    string key = 3;
+    AccountType accountType = 4;
+    google.protobuf.Timestamp createdAt = 5;
+  }
+
+  string clientId = 1;
+  repeated PixKey keys = 2;
 }
 
 
