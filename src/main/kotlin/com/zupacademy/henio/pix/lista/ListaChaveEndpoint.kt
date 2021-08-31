@@ -24,7 +24,7 @@ class ListaChaveEndpoint(
     ) {
 
         if(request.clientId.isNullOrBlank()) {
-            throw IllegalArgumentException("Id do cliente é obrigatório")
+            throw IllegalArgumentException("Cliente ID não pode ser nulo ou vazio")
         }
 
         val lista = repository.findAllByClienteId(UUID.fromString(request.clientId))

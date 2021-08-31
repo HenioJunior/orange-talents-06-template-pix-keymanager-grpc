@@ -31,7 +31,6 @@ class CarregaChaveEndpoint(
 
         responseObserver.onNext(ConsultaChavePixConverter().convert(chaveInfo))
         responseObserver.onCompleted()
-
     }
 }
 

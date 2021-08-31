@@ -10,6 +10,7 @@ import com.zupacademy.henio.pix.cliente.bcb.Owner
 import com.zupacademy.henio.pix.cliente.bcb.PixKeyDetailsResponse
 import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
 import com.zupacademy.henio.pix.grpc.AccountType
+import com.zupacademy.henio.pix.grpc.KeyType
 import com.zupacademy.henio.pix.grpc.PixKeyGetRequest
 import com.zupacademy.henio.pix.grpc.PixKeyGetServiceGrpc
 import io.grpc.ManagedChannel
@@ -45,39 +46,11 @@ internal class CarregaChaveEndpointTest(
         val CLIENTE_ID = UUID.randomUUID()
     }
 
-    val chave = ChavePix(
-        clienteId = UUID.fromString("c56dfef4-7901-44fb-84e2-a2cefb157890"),
-        tipoDeChave = TipoDeChave.CPF,
-        chave = "02467781054",
-        tipoDeConta = TipoDeConta.CONTA_CORRENTE,
-        conta = ContaAssociada(
-            instituicao = "ITAÚ UNIBANCO S.A.",
-            nomeDoTitular = "Rafael M C Ponte",
-            cpfDoTitular = "02467781054",
-            agencia = "0001",
-            numero = "291900",
-        )
-    )
-
-    val chavePixAusente = ChavePix(
-        clienteId = UUID.fromString("5260263c-a3c1-4727-ae32-3bdb2538841b"),
-        tipoDeChave = TipoDeChave.EMAIL,
-        chave = "otheruser@other.com",
-        tipoDeConta = TipoDeConta.CONTA_CORRENTE,
-        conta = ContaAssociada(
-            instituicao = "ITAÚ UNIBANCO S.A.",
-            nomeDoTitular = "Yuri Matheus",
-            cpfDoTitular = "86135457004",
-            agencia = "0001",
-            numero = "123455",
-        )
-    )
-
-
-
     @BeforeEach
     fun setup() {
-        repository.save(chave)
+        repository.save(chave(tipo = TipoDeChave.EMAIL, chave = "rafael.ponte@zup.com.br", clienteId = ListaChaveEndpointTest.CLIENTE_ID))
+        repository.save(chave(tipo = TipoDeChave.RANDOM, chave = "randomkey-2", clienteId = ListaChaveEndpointTest.CLIENTE_ID))
+        repository.save(chave(tipo = TipoDeChave.CPF, chave = "02467781054", clienteId = ListaChaveEndpointTest.CLIENTE_ID))
 
     }
 
@@ -175,8 +148,12 @@ internal class CarregaChaveEndpointTest(
     @Test
     fun `nao deve carregar chave por valor da chave filtro invalido` () {
 
+        val chaveInvalido = ""
+
         val excecao = assertThrows<StatusRuntimeException> {
-            grpcClient.get(PixKeyGetRequest.newBuilder().setChave("").build())
+            grpcClient.get(
+                PixKeyGetRequest.newBuilder()
+                    .setChave(chaveInvalido).build())
         }
 
         with(excecao) {
@@ -216,22 +193,41 @@ internal class CarregaChaveEndpointTest(
     private fun pixKeyDetailsResponse(): PixKeyDetailsResponse {
 
         return PixKeyDetailsResponse(
-            keyType = chavePixAusente.tipoDeChave,
-            key = chavePixAusente.chave,
+            keyType = TipoDeChave.CPF,
+            key = "02467781054",
             bankAccount = BankAccount(
                 participant = "ITAÚ UNIBANCO S.A.",
-                branch = chavePixAusente.conta.agencia,
-                accountNumber = chavePixAusente.conta.numero,
+                branch = "0001",
+                accountNumber = "291900",
                 accountType = BankAccount.AccountType.CACC
             ),
             owner = Owner(
                 type = Owner.OwnerType.NATURAL_PERSON,
-                name = chavePixAusente.conta.nomeDoTitular,
-                taxIdNumber = chavePixAusente.conta.cpfDoTitular
+                name = "Rafael M C Ponte",
+                taxIdNumber = "02467781054"
             ),
             createdAt = LocalDateTime.now()
         )
     }
 
+    private fun chave(
+        tipo: TipoDeChave,
+        chave: String,
+        clienteId: UUID = UUID.randomUUID()
+    ): ChavePix {
+        return ChavePix(
+            clienteId = clienteId,
+            tipoDeChave = tipo,
+            chave = chave,
+            tipoDeConta = TipoDeConta.CONTA_CORRENTE,
+            conta = ContaAssociada(
+                instituicao = "ITAÚ UNIBANCO S.A.",
+                nomeDoTitular = "Rafael M C Ponte",
+                cpfDoTitular = "02467781054",
+                agencia = "0001",
+                numero = "291900",
+            )
+        )
+    }
 }
 
