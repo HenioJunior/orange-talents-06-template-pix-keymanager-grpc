@@ -14,17 +14,18 @@ class RegistraChavePixEndpoint(@Inject private val service: NovaChavePixService)
     : KeymanagerRegistraGrpcServiceGrpc.KeymanagerRegistraGrpcServiceImplBase() {
 
     override fun registra(
-        grpcRequest: RegistraChavePixRequest?,
-        responseObserver: StreamObserver<RegistraChavePixResponse>?
+        grpcRequest: RegistraChavePixRequest,
+        responseObserver: StreamObserver<RegistraChavePixResponse>
     ) {
 
-        val novaChave = grpcRequest?.toDto();
-        val chaveCriada = novaChave?.let { service.registra(it) }
-        responseObserver?.onNext(RegistraChavePixResponse.newBuilder()
-                .setClienteId(chaveCriada?.clienteId.toString())
-                .setPixId(chaveCriada?.id.toString())
+        val novaChave = grpcRequest.toDto()
+        val chaveCriada = service.registra(novaChave)
+
+    responseObserver.onNext(RegistraChavePixResponse.newBuilder()
+                .setClienteId(chaveCriada.clienteId.toString())
+                .setPixId(chaveCriada.id.toString())
                 .build())
-        responseObserver?.onCompleted()
+        responseObserver.onCompleted()
     }
 }
 

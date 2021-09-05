@@ -130,15 +130,15 @@ internal class CarregaChaveEndpointTest(
     fun `deve carregar chave por valor da chave quando registro nao existir localmente mas existir no BCB` () {
 
         val bcbResponse = pixKeyDetailsResponse()
-        Mockito.`when`(bcbClient.consultaPorChave("otheruser@other.com"))
+        Mockito.`when`(bcbClient.consultaPorChave("02467781054"))
             .thenReturn(HttpResponse.ok(pixKeyDetailsResponse()))
 
         val response = grpcClient.carrega(CarregaChavePixRequest.newBuilder()
-            .setChave("otheruser@other.com")
+            .setChave("02467781054")
             .build())
 
         with(response) {
-            assertEquals("otheruser@other.com", this.chave.chave)
+            assertEquals("02467781054", this.chave.chave)
             assertEquals(bcbResponse.keyType.name, this.chave.tipoChave.name)
         }
     }
@@ -146,17 +146,14 @@ internal class CarregaChaveEndpointTest(
     @Test
     fun `nao deve carregar chave por valor da chave filtro invalido` () {
 
-        val chaveInvalido = ""
 
         val excecao = assertThrows<StatusRuntimeException> {
-            grpcClient.carrega(
-                CarregaChavePixRequest.newBuilder()
-                    .setChave(chaveInvalido).build())
+            grpcClient.carrega(CarregaChavePixRequest.newBuilder().build())
         }
 
         with(excecao) {
             assertEquals(Status.INVALID_ARGUMENT.code, status.code)
-            assertEquals("Dados inválidos", status.description)
+            assertEquals("Chave Pix inválida ou não informada", status.description)
         }
     }
 

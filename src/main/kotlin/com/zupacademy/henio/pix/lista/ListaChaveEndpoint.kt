@@ -2,12 +2,9 @@ package com.zupacademy.henio.pix.lista
 
 import com.google.protobuf.Timestamp
 import com.zupacademy.henio.pix.chave.ChavePixRepository
-import com.zupacademy.henio.pix.chave.TipoDeChave
-import com.zupacademy.henio.pix.chave.TipoDeConta
 import com.zupacademy.henio.pix.exceptions.handlers.ErrorHandler
 import com.zupacademy.henio.pix.grpc.*
 import io.grpc.stub.StreamObserver
-import java.lang.IllegalArgumentException
 import java.time.ZoneId
 import java.util.*
 import javax.inject.Inject
@@ -15,19 +12,20 @@ import javax.inject.Singleton
 
 @ErrorHandler
 @Singleton
-class ListaChaveEndpoint(
-    @Inject val repository: ChavePixRepository
-): KeymanagerListaGrpcServiceGrpc.KeymanagerListaGrpcServiceImplBase() {
+class ListaChaveEndpoint(@Inject val repository: ChavePixRepository)
+    : KeymanagerListaGrpcServiceGrpc.KeymanagerListaGrpcServiceImplBase() {
 
-    override fun lista(request: ListaChavePixRequest,
-                      responseObserver: StreamObserver<ListaChavePixResponse>,
+    override fun lista(
+        request: ListaChavePixRequest,
+        responseObserver: StreamObserver<ListaChavePixResponse>,
     ) {
 
         if(request.clienteId.isNullOrBlank()) {
             throw IllegalArgumentException("Cliente ID não pode ser nulo ou vazio")
         }
 
-        val lista = repository.findAllByClienteId(UUID.fromString(request.clienteId))
+        val clienteId = UUID.fromString(request.clienteId)
+        val chaves = repository.findAllByClienteId(clienteId)
             .map {
                 ListaChavePixResponse.ChavePix.newBuilder()
                     .setPixId(it.id.toString())
@@ -44,7 +42,8 @@ class ListaChaveEndpoint(
                     .build()
             }
         responseObserver.onNext(ListaChavePixResponse.newBuilder()
-            .addAllChaves(lista)
+            .setClienteId(clienteId.toString())
+            .addAllChaves(chaves)
             .build())
         responseObserver.onCompleted()
     }

@@ -105,12 +105,6 @@ internal class ListaChaveEndpointTest(
    }
 
 
-
-    @MockBean(BancoCentralClient::class)
-    fun bcbClient(): BancoCentralClient? {
-        return Mockito.mock(BancoCentralClient::class.java)
-    }
-
     @Factory
     class KeyGetClient {
         @Bean
@@ -119,25 +113,27 @@ internal class ListaChaveEndpointTest(
             return KeymanagerListaGrpcServiceGrpc.newBlockingStub(channel)
         }
     }
+
+    private fun chave(
+        tipo: TipoDeChave,
+        chave: String,
+        clienteId: UUID = UUID.randomUUID()
+    ): ChavePix {
+        return ChavePix(
+            clienteId = clienteId,
+            tipoDeChave = tipo,
+            chave = chave,
+            tipoDeConta = TipoDeConta.CONTA_CORRENTE,
+            conta = ContaAssociada(
+                instituicao = "ITAÚ UNIBANCO S.A.",
+                nomeDoTitular = "Rafael M C Ponte",
+                cpfDoTitular = "02467781054",
+                agencia = "0001",
+                numero = "291900",
+            )
+        )
+    }
 }
 
-private fun chave(
-    tipo: TipoDeChave,
-    chave: String,
-    clienteId: UUID = UUID.randomUUID()
-): ChavePix {
-    return ChavePix(
-        clienteId = clienteId,
-        tipoDeChave = tipo,
-        chave = chave,
-        tipoDeConta = TipoDeConta.CONTA_CORRENTE,
-        conta = ContaAssociada(
-            instituicao = "ITAÚ UNIBANCO S.A.",
-            nomeDoTitular = "Rafael M C Ponte",
-            cpfDoTitular = "02467781054",
-            agencia = "0001",
-            numero = "291900",
-        )
-    )
-}
+
 

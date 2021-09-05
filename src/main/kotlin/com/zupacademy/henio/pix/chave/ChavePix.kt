@@ -34,8 +34,7 @@ class ChavePix(
 ) {
 
     @Id
-    @GeneratedValue
-    val id: UUID? = null
+    val id: UUID? = UUID.randomUUID()
 
     @Column(nullable = false)
     val criadaEm: LocalDateTime = LocalDateTime.now()
