@@ -35,16 +35,12 @@ internal class ListaChaveEndpointTest(
     val grpcClient: KeymanagerListaGrpcServiceGrpc.KeymanagerListaGrpcServiceBlockingStub
 ) {
 
-    companion object {
-        val CLIENTE_ID = UUID.randomUUID()
-    }
-
 
     @BeforeEach
     fun setup() {
-        repository.save(chave(tipo = TipoDeChave.EMAIL, chave = "rafael.ponte@zup.com.br", clienteId = CLIENTE_ID))
-        repository.save(chave(tipo = TipoDeChave.RANDOM, chave = "randomkey-2", clienteId = CLIENTE_ID))
-        repository.save(chave(tipo = TipoDeChave.CPF, chave = "02467781054", clienteId = CLIENTE_ID))
+        repository.save(chave(tipo = TipoDeChave.EMAIL, chave = "rafael.ponte@zup.com.br"))
+        repository.save(chave(tipo = TipoDeChave.RANDOM, chave = "randomkey-2"))
+        repository.save(chave(tipo = TipoDeChave.CPF, chave = "02467781054"))
 
     }
 
@@ -56,7 +52,7 @@ internal class ListaChaveEndpointTest(
     @Test
     fun `deve listar todas as chaves do cliente`() {
 
-        val clienteId = CLIENTE_ID.toString()
+        val clienteId = "c56dfef4-7901-44fb-84e2-a2cefb157890"
 
         val response = grpcClient.lista(ListaChavePixRequest.newBuilder()
             .setClienteId(clienteId)
@@ -116,11 +112,10 @@ internal class ListaChaveEndpointTest(
 
     private fun chave(
         tipo: TipoDeChave,
-        chave: String,
-        clienteId: UUID = UUID.randomUUID()
-    ): ChavePix {
+        chave: String
+      ): ChavePix {
         return ChavePix(
-            clienteId = clienteId,
+            clienteId = UUID.fromString("c56dfef4-7901-44fb-84e2-a2cefb157890"),
             tipoDeChave = tipo,
             chave = chave,
             tipoDeConta = TipoDeConta.CONTA_CORRENTE,

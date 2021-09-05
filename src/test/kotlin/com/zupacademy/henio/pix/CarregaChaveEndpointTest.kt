@@ -41,14 +41,15 @@ internal class CarregaChaveEndpointTest(
     lateinit var bcbClient: BancoCentralClient
 
     companion object {
-        val CLIENTE_ID = UUID.randomUUID()
+        val CLIENTE_ID = "c56dfef4-7901-44fb-84e2-a2cefb157890"
     }
 
     @BeforeEach
     fun setup() {
-        repository.save(chave(tipo = TipoDeChave.EMAIL, chave = "rafael.ponte@zup.com.br", clienteId = ListaChaveEndpointTest.CLIENTE_ID))
-        repository.save(chave(tipo = TipoDeChave.RANDOM, chave = "randomkey-2", clienteId = ListaChaveEndpointTest.CLIENTE_ID))
-        repository.save(chave(tipo = TipoDeChave.CPF, chave = "02467781054", clienteId = ListaChaveEndpointTest.CLIENTE_ID))
+
+        repository.save(chave(tipo = TipoDeChave.EMAIL, chave = "rafael.ponte@zup.com.br", clienteId = UUID.fromString(CLIENTE_ID) ))
+        repository.save(chave(tipo = TipoDeChave.RANDOM, chave = "randomkey-2", clienteId = UUID.fromString(CLIENTE_ID)))
+        repository.save(chave(tipo = TipoDeChave.CPF, chave = "02467781054", clienteId = UUID.fromString(CLIENTE_ID)))
 
     }
 
@@ -86,9 +87,8 @@ internal class CarregaChaveEndpointTest(
             with(excecao) {
                 assertEquals(Status.INVALID_ARGUMENT.code, status.code)
                 assertEquals("Chave Pix inválida ou não informada", status.description)
-                //TODO: extrair e validar os detalhes do erro...
             }
-}
+    }
 
     @Test
     fun `nao deve carregar chave por pixId e clienteId quando registro nao existir`() {
@@ -145,7 +145,6 @@ internal class CarregaChaveEndpointTest(
 
     @Test
     fun `nao deve carregar chave por valor da chave filtro invalido` () {
-
 
         val excecao = assertThrows<StatusRuntimeException> {
             grpcClient.carrega(CarregaChavePixRequest.newBuilder().build())
@@ -208,7 +207,7 @@ internal class CarregaChaveEndpointTest(
     private fun chave(
         tipo: TipoDeChave,
         chave: String,
-        clienteId: UUID = UUID.randomUUID()
+        clienteId: UUID
     ): ChavePix {
         return ChavePix(
             clienteId = clienteId,
