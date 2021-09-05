@@ -1,10 +1,9 @@
 package com.zupacademy.henio.pix.registra
 
 import com.zupacademy.henio.pix.exceptions.handlers.ErrorHandler
-import com.zupacademy.henio.pix.grpc.PixKeyRegisterServiceGrpc
-import com.zupacademy.henio.pix.grpc.PixKeyRequest
-import com.zupacademy.henio.pix.grpc.PixKeyResponse
-import com.zupacademy.henio.pix.toDto
+import com.zupacademy.henio.pix.grpc.KeymanagerRegistraGrpcServiceGrpc
+import com.zupacademy.henio.pix.grpc.RegistraChavePixRequest
+import com.zupacademy.henio.pix.grpc.RegistraChavePixResponse
 import io.grpc.stub.StreamObserver
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -12,21 +11,20 @@ import javax.inject.Singleton
 @ErrorHandler
 @Singleton
 class RegistraChavePixEndpoint(@Inject private val service: NovaChavePixService)
-    : PixKeyRegisterServiceGrpc.PixKeyRegisterServiceImplBase() {
+    : KeymanagerRegistraGrpcServiceGrpc.KeymanagerRegistraGrpcServiceImplBase() {
 
-    override fun register(
-        grpcRequest: PixKeyRequest,
-        responseObserver: StreamObserver<PixKeyResponse>
+    override fun registra(
+        grpcRequest: RegistraChavePixRequest?,
+        responseObserver: StreamObserver<RegistraChavePixResponse>?
     ) {
 
-        val novaChave = grpcRequest.toDto();
-        val chaveCriada = service.registra(novaChave)
-        responseObserver.onNext(
-            PixKeyResponse.newBuilder()
-                .setClientId(chaveCriada.clienteId.toString())
-                .setPixId(chaveCriada.id.toString())
+        val novaChave = grpcRequest?.toDto();
+        val chaveCriada = novaChave?.let { service.registra(it) }
+        responseObserver?.onNext(RegistraChavePixResponse.newBuilder()
+                .setClienteId(chaveCriada?.clienteId.toString())
+                .setPixId(chaveCriada?.id.toString())
                 .build())
-        responseObserver.onCompleted()
+        responseObserver?.onCompleted()
     }
 }
 

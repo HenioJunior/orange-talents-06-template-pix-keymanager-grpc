@@ -17,23 +17,23 @@ import javax.inject.Singleton
 @Singleton
 class ListaChaveEndpoint(
     @Inject val repository: ChavePixRepository
-): PixKeyListServiceGrpc.PixKeyListServiceImplBase() {
+): KeymanagerListaGrpcServiceGrpc.KeymanagerListaGrpcServiceImplBase() {
 
-    override fun list(request: PixKeyListRequest,
-                      responseObserver: StreamObserver<PixKeyListResponse>,
+    override fun lista(request: ListaChavePixRequest,
+                      responseObserver: StreamObserver<ListaChavePixResponse>,
     ) {
 
-        if(request.clientId.isNullOrBlank()) {
+        if(request.clienteId.isNullOrBlank()) {
             throw IllegalArgumentException("Cliente ID não pode ser nulo ou vazio")
         }
 
-        val lista = repository.findAllByClienteId(UUID.fromString(request.clientId))
+        val lista = repository.findAllByClienteId(UUID.fromString(request.clienteId))
             .map {
-                PixKeyListResponse.PixKey.newBuilder()
+                ListaChavePixResponse.ChavePix.newBuilder()
                     .setPixId(it.id.toString())
-                    .setKeyType(KeyType.valueOf(it.tipoDeChave.name))
-                    .setKey(it.chave)
-                    .setAccountType(AccountType.valueOf(it.tipoDeConta.name))
+                    .setTipoChave(TipoChave.valueOf(it.tipoDeChave.name))
+                    .setChave(it.chave)
+                    .setTipoConta(TipoConta.valueOf(it.tipoDeConta.name))
                     .setCreatedAt(it.criadaEm.let {
                         val createdAt = it.atZone(ZoneId.of("UTC")).toInstant()
                         Timestamp.newBuilder()
@@ -43,8 +43,8 @@ class ListaChaveEndpoint(
                     })
                     .build()
             }
-        responseObserver.onNext(PixKeyListResponse.newBuilder()
-            .addAllKeys(lista)
+        responseObserver.onNext(ListaChavePixResponse.newBuilder()
+            .addAllChaves(lista)
             .build())
         responseObserver.onCompleted()
     }

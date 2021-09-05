@@ -7,8 +7,8 @@ import com.zupacademy.henio.pix.cliente.bcb.BancoCentralClient
 import com.zupacademy.henio.pix.cliente.bcb.DeletePixKeyRequest
 import com.zupacademy.henio.pix.cliente.bcb.DeletePixKeyResponse
 import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
-import com.zupacademy.henio.pix.grpc.PixKeyDeleteRequest
-import com.zupacademy.henio.pix.grpc.PixKeyDeleteServiceGrpc
+import com.zupacademy.henio.pix.grpc.KeymanagerRemoveGrpcServiceGrpc
+import com.zupacademy.henio.pix.grpc.RemoveChavePixRequest
 import io.grpc.ManagedChannel
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
@@ -30,9 +30,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @MicronautTest(transactional = false)
-internal class ExcluiChaveEndpointTest (
+internal class RemoveChaveEndpointTest (
     val repository: ChavePixRepository,
-    val grpcClient: PixKeyDeleteServiceGrpc.PixKeyDeleteServiceBlockingStub,
+    val grpcClient: KeymanagerRemoveGrpcServiceGrpc.KeymanagerRemoveGrpcServiceBlockingStub
 ){
     @Inject
     lateinit var bcbClient: BancoCentralClient
@@ -65,14 +65,14 @@ internal class ExcluiChaveEndpointTest (
                                                                 deletedAt = LocalDateTime.now() )
             ))
 
-        val response = grpcClient.delete(
-            PixKeyDeleteRequest.newBuilder()
+        val response = grpcClient.remove(
+            RemoveChavePixRequest.newBuilder()
                 .setPixId(CHAVE_EXISTENTE.id.toString())
-                .setClientId(CHAVE_EXISTENTE.clienteId.toString())
+                .setClienteId(CHAVE_EXISTENTE.clienteId.toString())
                 .build())
 
             assertEquals(CHAVE_EXISTENTE.id.toString(), response.pixId)
-            assertEquals(CHAVE_EXISTENTE.clienteId.toString(), response.clientId)
+            assertEquals(CHAVE_EXISTENTE.clienteId.toString(), response.clienteId)
     }
 
     @Test
@@ -81,9 +81,9 @@ internal class ExcluiChaveEndpointTest (
             .thenReturn(HttpResponse.unprocessableEntity())
 
         val excecao = assertThrows<StatusRuntimeException> {
-            grpcClient.delete(PixKeyDeleteRequest.newBuilder()
+            grpcClient.remove(RemoveChavePixRequest.newBuilder()
                 .setPixId(CHAVE_EXISTENTE.id.toString())
-                .setClientId(CHAVE_EXISTENTE.clienteId.toString())
+                .setClienteId(CHAVE_EXISTENTE.clienteId.toString())
                 .build())
         }
 
@@ -101,9 +101,9 @@ internal class ExcluiChaveEndpointTest (
         val pixIdNaoExiste = UUID.randomUUID().toString()
 
         val excecao = assertThrows<StatusRuntimeException> {
-            grpcClient.delete(PixKeyDeleteRequest.newBuilder()
+            grpcClient.remove(RemoveChavePixRequest.newBuilder()
                 .setPixId(pixIdNaoExiste)
-                .setClientId(CHAVE_EXISTENTE.clienteId.toString())
+                .setClienteId(CHAVE_EXISTENTE.clienteId.toString())
                 .build())
         }
 
@@ -119,9 +119,9 @@ internal class ExcluiChaveEndpointTest (
         val outroClienteId = UUID.randomUUID().toString()
 
         val excecao = assertThrows<StatusRuntimeException> {
-            grpcClient.delete(PixKeyDeleteRequest.newBuilder()
+            grpcClient.remove(RemoveChavePixRequest.newBuilder()
                 .setPixId(CHAVE_EXISTENTE.id.toString())
-                .setClientId(outroClienteId)
+                .setClienteId(outroClienteId)
                 .build())
         }
 
@@ -140,7 +140,7 @@ internal class ExcluiChaveEndpointTest (
 @Factory
 class KeyDeleteClient {
     @Singleton
-    fun blockingStub(@GrpcChannel(GrpcServerChannel.NAME) channel: ManagedChannel) = PixKeyDeleteServiceGrpc.newBlockingStub(channel)
+    fun blockingStub(@GrpcChannel(GrpcServerChannel.NAME) channel: ManagedChannel) = KeymanagerRemoveGrpcServiceGrpc.newBlockingStub(channel)
 
 }
 

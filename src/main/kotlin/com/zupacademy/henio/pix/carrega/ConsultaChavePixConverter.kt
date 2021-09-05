@@ -2,29 +2,27 @@ package com.zupacademy.henio.pix.carrega
 
 import com.google.protobuf.Timestamp
 import com.zupacademy.henio.pix.cliente.bcb.ChavePixInfo
-import com.zupacademy.henio.pix.grpc.AccountType
-import com.zupacademy.henio.pix.grpc.KeyType
-import com.zupacademy.henio.pix.grpc.PixKeyGetResponse
+import com.zupacademy.henio.pix.grpc.*
 import java.time.ZoneId
 
 class ConsultaChavePixConverter {
 
-    fun convert(chaveInfo: ChavePixInfo): PixKeyGetResponse {
+    fun convert(chaveInfo: ChavePixInfo): CarregaChavePixResponse {
 
-        return PixKeyGetResponse.newBuilder()
-            .setClientId(chaveInfo.clienteId.toString())
+        return CarregaChavePixResponse.newBuilder()
+            .setClienteId(chaveInfo.clienteId.toString())
             .setPixId(chaveInfo.id.toString())
-            .setKey(PixKeyGetResponse.PixKey.newBuilder()
-                .setType(KeyType.valueOf(chaveInfo.tipoDeChave.name))
-                .setKey(chaveInfo.chave)
-                .setAccount(
-                    PixKeyGetResponse.PixKey.AccountInfo.newBuilder()
-                    .setAccountType(AccountType.valueOf(chaveInfo.tipoDeConta.name))
-                    .setParticipant(chaveInfo.conta.instituicao)
-                    .setName(chaveInfo.conta.nomeDoTitular)
-                    .setTaxIdNumber(chaveInfo.conta.cpfDoTitular)
-                    .setBranch(chaveInfo.conta.agencia)
-                    .setAccountNumber(chaveInfo.conta.numero)
+            .setChave(CarregaChavePixResponse.ChavePix.newBuilder()
+                .setTipoChave(TipoChave.valueOf(chaveInfo.tipoDeChave.name))
+                .setChave(chaveInfo.chave)
+                .setConta(
+                    CarregaChavePixResponse.ChavePix.ContaInfo.newBuilder()
+                    .setTipoConta(TipoConta.valueOf(chaveInfo.tipoDeConta.name))
+                    .setInstituicao(chaveInfo.conta.instituicao)
+                    .setNomeDoTitular(chaveInfo.conta.nomeDoTitular)
+                    .setCpfDoTitular(chaveInfo.conta.cpfDoTitular)
+                    .setAgencia(chaveInfo.conta.agencia)
+                    .setNumeroDaConta(chaveInfo.conta.numero)
                     .build()
                 )
                 .setCreatedAt(chaveInfo.criadaEm.let {

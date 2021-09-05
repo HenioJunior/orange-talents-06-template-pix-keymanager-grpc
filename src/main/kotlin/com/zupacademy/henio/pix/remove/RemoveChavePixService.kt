@@ -4,7 +4,7 @@ import com.zupacademy.henio.pix.chave.ChavePixRepository
 import com.zupacademy.henio.pix.cliente.bcb.BancoCentralClient
 import com.zupacademy.henio.pix.cliente.bcb.DeletePixKeyRequest
 import com.zupacademy.henio.pix.exceptions.ChavePixNaoEncontradaException
-import com.zupacademy.henio.pix.validacoes.ValidaUUID
+import com.zupacademy.henio.pix.validacoes.ValidUUID
 import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
@@ -26,8 +26,8 @@ class RemoveChavePixService(
 
     @Transactional
     fun exclui(
-        @NotBlank @ValidaUUID(message = "cliente ID com formato inválido") clienteId: String?,
-        @NotBlank @ValidaUUID(message = "pix ID com formato inválido") pixId: String?
+        @NotBlank @ValidUUID(message = "cliente ID com formato inválido") clienteId: String?,
+        @NotBlank @ValidUUID(message = "pix ID com formato inválido") pixId: String?
     ) {
 
         val uuidPixId = UUID.fromString(pixId)

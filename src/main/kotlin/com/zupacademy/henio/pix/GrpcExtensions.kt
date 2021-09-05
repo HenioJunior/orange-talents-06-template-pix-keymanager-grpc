@@ -1,43 +1,26 @@
 package com.zupacademy.henio.pix
 
 import com.zupacademy.henio.pix.carrega.Filtro
-import com.zupacademy.henio.pix.chave.TipoDeChave
-import com.zupacademy.henio.pix.chave.TipoDeConta
-import com.zupacademy.henio.pix.grpc.*
-import com.zupacademy.henio.pix.grpc.PixKeyGetRequest.FilterCase.*
-import com.zupacademy.henio.pix.registra.NovaChavePixRequest
+import com.zupacademy.henio.pix.grpc.CarregaChavePixRequest
 import com.zupacademy.henio.pix.remove.RemoveChavePixRequest
 import io.micronaut.validation.validator.Validator
 import javax.validation.ConstraintViolationException
 
-fun PixKeyRequest.toDto(): NovaChavePixRequest {
 
-    return NovaChavePixRequest(
-        clienteId = clientId,
-        tipoDeChave = when(keyType) {
-            KeyType.UNKNOWN_KEY -> null
-            else -> TipoDeChave.valueOf(keyType.name)
-        },
-        valorDaChave = key,
-        tipoDeConta = when(accountType) {
-            AccountType.UNKNOWN_ACCOUNT -> null
-            else -> TipoDeConta.valueOf(accountType.name)
-        }
-    )
+fun RemoveChavePixRequest.toRemoveRequest(): RemoveChavePixRequest {
+
+    return RemoveChavePixRequest(clienteId, pixId)
 }
 
-fun PixKeyDeleteRequest.toRemoveRequest(): RemoveChavePixRequest {
+fun CarregaChavePixRequest.toFiltro(validator: Validator): Filtro {
 
-    return RemoveChavePixRequest(clientId, pixId)
-}
-
-fun PixKeyGetRequest.toFiltro(validator: Validator): Filtro {
-    val filtro = when(filterCase!!) {
-        PIXID -> pixId.let {
-            Filtro.PorPixId(clienteId = it.clientId, pixId = it.pixId)
+    val filtro = when(filtroCase!!) {
+        CarregaChavePixRequest.FiltroCase.PIXID -> pixId.let {
+            Filtro.PorPixId(clienteId = it.clienteId, pixId = it.pixId)
         }
-        CHAVE -> Filtro.PorChave(chave)
-        FILTER_NOT_SET -> Filtro.Invalido()
+        CarregaChavePixRequest.FiltroCase.CHAVE -> Filtro.PorChave(chave)
+
+        CarregaChavePixRequest.FiltroCase.FILTRO_NOT_SET -> Filtro.Invalido()
     }
 
     val violations = validator.validate(filtro)

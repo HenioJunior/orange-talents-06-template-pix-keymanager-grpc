@@ -1,8 +1,6 @@
-package com.zupacademy.henio.pix.registra
+package com.zupacademy.henio.pix.cliente.itau
 
-import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
-
-class DadosDaContaResponse(
+data class DadosDaContaResponse(
     val tipo: String,
     val instituicao: InstituicaoResponse,
     val agencia: String,

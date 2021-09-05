@@ -9,10 +9,8 @@ import com.zupacademy.henio.pix.cliente.bcb.BankAccount
 import com.zupacademy.henio.pix.cliente.bcb.Owner
 import com.zupacademy.henio.pix.cliente.bcb.PixKeyDetailsResponse
 import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
-import com.zupacademy.henio.pix.grpc.AccountType
-import com.zupacademy.henio.pix.grpc.KeyType
-import com.zupacademy.henio.pix.grpc.PixKeyGetRequest
-import com.zupacademy.henio.pix.grpc.PixKeyGetServiceGrpc
+import com.zupacademy.henio.pix.grpc.CarregaChavePixRequest
+import com.zupacademy.henio.pix.grpc.KeymanagerCarregaGrpcServiceGrpc
 import io.grpc.ManagedChannel
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
@@ -36,7 +34,7 @@ import java.time.LocalDateTime
 @MicronautTest(transactional = false)
 internal class CarregaChaveEndpointTest(
     @Inject val repository: ChavePixRepository,
-    @Inject val grpcClient: PixKeyGetServiceGrpc.PixKeyGetServiceBlockingStub
+    @Inject val grpcClient: KeymanagerCarregaGrpcServiceGrpc.KeymanagerCarregaGrpcServiceBlockingStub
 ) {
 
     @Inject
@@ -64,25 +62,25 @@ internal class CarregaChaveEndpointTest(
 
         val chaveExistente = repository.findByChave("02467781054").get()
 
-        val response = grpcClient.get(PixKeyGetRequest.newBuilder()
-            .setPixId(PixKeyGetRequest.FilterByPixId.newBuilder()
+        val response = grpcClient.carrega(CarregaChavePixRequest.newBuilder()
+            .setPixId(CarregaChavePixRequest.FiltroPorPixId.newBuilder()
                 .setPixId(chaveExistente.id.toString())
-                .setClientId(chaveExistente.clienteId.toString())
+                .setClienteId(chaveExistente.clienteId.toString())
                 .build()
             ).build())
 
         with(response) {
             assertEquals(chaveExistente.id.toString(), this.pixId)
-            assertEquals(chaveExistente.clienteId.toString(), this.clientId)
-            assertEquals(chaveExistente.tipoDeChave.toString(), this.key.type.name)
-            assertEquals(chaveExistente.chave, this.key.key)
+            assertEquals(chaveExistente.clienteId.toString(), this.clienteId)
+            assertEquals(chaveExistente.tipoDeChave.toString(), this.chave.tipoChave.name)
+            assertEquals(chaveExistente.chave, this.chave.chave)
         }
     }
 
     @Test
     fun `nao deve carregar chave por pixId e clienteId quando filtro for invalido`() {
         val excecao = assertThrows<StatusRuntimeException> {
-            grpcClient.get(PixKeyGetRequest.newBuilder()
+            grpcClient.carrega(CarregaChavePixRequest.newBuilder()
                     .build())
         }
             with(excecao) {
@@ -99,10 +97,10 @@ internal class CarregaChaveEndpointTest(
         val clienteIdNaoExistente = UUID.randomUUID().toString()
 
         val excecao = assertThrows<StatusRuntimeException> {
-            grpcClient.get(PixKeyGetRequest.newBuilder()
-                .setPixId(PixKeyGetRequest.FilterByPixId.newBuilder()
+            grpcClient.carrega(CarregaChavePixRequest.newBuilder()
+                .setPixId(CarregaChavePixRequest.FiltroPorPixId.newBuilder()
                     .setPixId(pixIdNaoExistente)
-                    .setClientId(clienteIdNaoExistente)
+                    .setClienteId(clienteIdNaoExistente)
                     .build()
                 ).build())
         }
@@ -116,15 +114,15 @@ internal class CarregaChaveEndpointTest(
     fun `deve carregar chave por valor da chave quando registro existir localmente`() {
         val chaveExistente = repository.findByChave("02467781054").get()
 
-        val response = grpcClient.get(PixKeyGetRequest.newBuilder()
+        val response = grpcClient.carrega(CarregaChavePixRequest.newBuilder()
             .setChave("02467781054")
             .build())
 
         with(response) {
             assertEquals(chaveExistente.id.toString(), this.pixId)
-            assertEquals(chaveExistente.clienteId.toString(), this.clientId)
-            assertEquals(chaveExistente.tipoDeChave.toString(), this.key.type.name)
-            assertEquals(chaveExistente.chave, this.key.key)
+            assertEquals(chaveExistente.clienteId.toString(), this.clienteId)
+            assertEquals(chaveExistente.tipoDeChave.toString(), this.chave.tipoChave.name)
+            assertEquals(chaveExistente.chave, this.chave.chave)
         }
     }
 
@@ -135,13 +133,13 @@ internal class CarregaChaveEndpointTest(
         Mockito.`when`(bcbClient.consultaPorChave("otheruser@other.com"))
             .thenReturn(HttpResponse.ok(pixKeyDetailsResponse()))
 
-        val response = grpcClient.get(PixKeyGetRequest.newBuilder()
+        val response = grpcClient.carrega(CarregaChavePixRequest.newBuilder()
             .setChave("otheruser@other.com")
             .build())
 
         with(response) {
-            assertEquals("otheruser@other.com", this.key.key)
-            assertEquals(bcbResponse.keyType.name, this.key.type.name)
+            assertEquals("otheruser@other.com", this.chave.chave)
+            assertEquals(bcbResponse.keyType.name, this.chave.tipoChave.name)
         }
     }
 
@@ -151,8 +149,8 @@ internal class CarregaChaveEndpointTest(
         val chaveInvalido = ""
 
         val excecao = assertThrows<StatusRuntimeException> {
-            grpcClient.get(
-                PixKeyGetRequest.newBuilder()
+            grpcClient.carrega(
+                CarregaChavePixRequest.newBuilder()
                     .setChave(chaveInvalido).build())
         }
 
@@ -165,7 +163,7 @@ internal class CarregaChaveEndpointTest(
     @Test
     fun `nao deve carregar chave quando filtro invalido`() {
         val excecao = assertThrows<StatusRuntimeException> {
-            grpcClient.get(PixKeyGetRequest.newBuilder().build())
+            grpcClient.carrega(CarregaChavePixRequest.newBuilder().build())
         }
 
         with(excecao) {
@@ -183,8 +181,8 @@ internal class CarregaChaveEndpointTest(
     class KeyGetClient {
         @Bean
         fun blockingStub(@GrpcChannel(GrpcServerChannel.NAME) channel: ManagedChannel):
-                PixKeyGetServiceGrpc.PixKeyGetServiceBlockingStub{
-            return PixKeyGetServiceGrpc.newBlockingStub(channel)
+                KeymanagerCarregaGrpcServiceGrpc.KeymanagerCarregaGrpcServiceBlockingStub{
+            return KeymanagerCarregaGrpcServiceGrpc.newBlockingStub(channel)
         }
     }
 

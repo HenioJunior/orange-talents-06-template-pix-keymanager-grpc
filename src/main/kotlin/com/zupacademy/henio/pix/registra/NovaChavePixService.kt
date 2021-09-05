@@ -6,6 +6,8 @@ import com.zupacademy.henio.pix.cliente.bcb.BancoCentralClient
 import com.zupacademy.henio.pix.cliente.bcb.CreatePixKeyRequest
 import com.zupacademy.henio.pix.cliente.itau.BancoItauClient
 import com.zupacademy.henio.pix.exceptions.ChavePixExistenteException
+import com.zupacademy.henio.pix.exceptions.ErroDeComunicacaoComApiException
+import com.zupacademy.henio.pix.exceptions.InconsistenciaDeDadosException
 import io.micronaut.http.HttpStatus
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
@@ -21,34 +23,39 @@ class NovaChavePixService(
     @Inject val itauClient: BancoItauClient,
     @Inject val bcbClient: BancoCentralClient
 ){
-
     private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
     @Transactional
-    fun registra(@Valid novaChave: NovaChavePixRequest): ChavePix {
+    fun registra(@Valid novaChave: NovaChavePix): ChavePix {
 
-        if(repository.existsByChave(novaChave.valorDaChave))
-            throw ChavePixExistenteException("Chave Pix ${novaChave.valorDaChave} existente")
+        if(repository.existsByChave(novaChave.chave))
+            throw ChavePixExistenteException("Chave Pix ${novaChave.chave} existente")
 
         val response = itauClient.buscaContaPorTipo(novaChave.clienteId!!, novaChave.tipoDeConta!!.name)
         val conta = response.body()?.associaConta() ?: throw IllegalStateException("Cliente não encontrado no Itau")
 
-        var chave = novaChave.toModel(conta)
+        val chave = novaChave.paraChavePix(conta)
         repository.save(chave)
 
         val bcbRequest = CreatePixKeyRequest.of(chave).also {
-            LOGGER.info("Registrando chave Pix no Banco Central do Brasil (BCB): $it")
+            LOGGER.info("Registrando chave Pix no Banco Central do Brasil (BCB: $it)")
         }
+        val bcbResponse = bcbClient.registraChaveNoBC(bcbRequest)
 
-        val bcbResponse = bcbClient.cadastraChaveNoBC(bcbRequest)
-        if(bcbResponse.status != HttpStatus.CREATED)
-
-            throw IllegalStateException("Erro ao registrar chave Pix no Banco Central do Brasil (BCB)")
-
-//        chave = bcbResponse.body()!!.toChavePix(novaChave, conta)
+        when(bcbResponse.status) {
+            HttpStatus.CREATED -> return bcbResponse.body()!!.toBcbChavePix(novaChave, conta)
+            HttpStatus.UNPROCESSABLE_ENTITY -> {
+                LOGGER.error("Inconsistencia de dados. Chave já registrada no Banco Central")
+                throw InconsistenciaDeDadosException(
+                    "Inconsistencia de dados. Chave já registrada no Banco Central")
+            }
+            else -> {
+                LOGGER.error("Erro ao comunicar com o Banco Central")
+                throw ErroDeComunicacaoComApiException("Erro ao comunicar com o Banco Central")
+            }
+        }
 
         return chave
     }
-
 }
 

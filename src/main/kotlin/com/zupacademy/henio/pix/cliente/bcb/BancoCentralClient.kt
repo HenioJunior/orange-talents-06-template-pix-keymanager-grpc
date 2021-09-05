@@ -4,12 +4,13 @@ import com.zupacademy.henio.pix.chave.ChavePix
 import com.zupacademy.henio.pix.chave.TipoDeChave
 import com.zupacademy.henio.pix.chave.TipoDeConta
 import com.zupacademy.henio.pix.cliente.itau.ContaAssociada
-import com.zupacademy.henio.pix.grpc.PixKeyGetResponse
+import com.zupacademy.henio.pix.registra.NovaChavePix
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.*
 import io.micronaut.http.client.annotation.Client
 import java.time.LocalDateTime
+import java.util.*
 
 @Client("\${bc.pix.url}")
 interface BancoCentralClient {
@@ -17,7 +18,7 @@ interface BancoCentralClient {
     @Post(value = "/api/v1/pix/keys",
         produces = [MediaType.APPLICATION_XML],
         processes = [MediaType.APPLICATION_XML])
-    fun cadastraChaveNoBC(@Body request: CreatePixKeyRequest) : HttpResponse<CreatePixKeyResponse>
+    fun registraChaveNoBC(@Body request: CreatePixKeyRequest) : HttpResponse<CreatePixKeyResponse>
 
     @Delete(value = "/api/v1/pix/keys/{key}",
         produces = [MediaType.APPLICATION_XML],
@@ -75,7 +76,19 @@ data class CreatePixKeyResponse (
     val bankAccount: BankAccount,
     val owner: Owner,
     val createdAt: LocalDateTime
-)
+) {
+
+    fun toBcbChavePix(request: NovaChavePix, conta: ContaAssociada): ChavePix {
+
+        return ChavePix(
+            clienteId = UUID.fromString(request.clienteId),
+            tipoDeChave = TipoDeChave.valueOf(keyType),
+            chave = key,
+            tipoDeConta = TipoDeConta.valueOf(request.tipoDeConta!!.name),
+            conta = conta
+        )
+    }
+}
 
 data class Owner (
     val type: OwnerType,

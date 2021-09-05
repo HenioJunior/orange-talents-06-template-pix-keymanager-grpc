@@ -4,7 +4,7 @@ import com.zupacademy.henio.pix.chave.ChavePixRepository
 import com.zupacademy.henio.pix.cliente.bcb.BancoCentralClient
 import com.zupacademy.henio.pix.cliente.bcb.ChavePixInfo
 import com.zupacademy.henio.pix.exceptions.ChavePixNaoEncontradaException
-import com.zupacademy.henio.pix.validacoes.ValidaUUID
+import com.zupacademy.henio.pix.validacoes.ValidUUID
 import io.micronaut.core.annotation.Introspected
 import io.micronaut.http.HttpStatus
 import org.slf4j.LoggerFactory
@@ -20,10 +20,10 @@ sealed class Filtro {
     @Introspected
     data class PorPixId(
         @field:NotBlank
-        @field:ValidaUUID
+        @field:ValidUUID
         val clienteId: String,
         @field:NotBlank
-        @field:ValidaUUID
+        @field:ValidUUID
         val pixId: String
     ) : Filtro() {
 
